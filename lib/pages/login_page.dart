@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             borderRadius: BorderRadius.circular(5.0),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Colors.grey,
+                color: Colors.grey[300],
                 blurRadius: 1.0,
                 offset: Offset(0.0,2.5),
                 spreadRadius: 0.5,
@@ -82,6 +82,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           ),
           child: Column(
             children: <Widget>[
+              Padding(padding: EdgeInsets.all(16.0)),
               Text('Login', style: TextStyle(color: animatedColor.value, fontSize: 19.0, fontWeight: FontWeight.bold),),
               _createEmail(),
               _createPassword(),

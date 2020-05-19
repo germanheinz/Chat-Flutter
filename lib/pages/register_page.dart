@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chat/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
@@ -64,16 +65,26 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             borderRadius: BorderRadius.circular(5.0),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Colors.grey,
-                blurRadius: 1.0,
+                color: Colors.grey[300],
+                blurRadius: 3.5,
                 offset: Offset(0.0,2.5),
-                spreadRadius: 0.5,
+                spreadRadius: 0.6,
               )
             ]
           ),
           child: Column(
             children: <Widget>[
-              Text('Register', style: TextStyle(color: Colors.red, fontSize: 19.0, fontWeight: FontWeight.bold),),
+              Padding(padding: EdgeInsets.all(16.0)),
+              TypewriterAnimatedTextKit(
+                text:['Register'], 
+                speed: Duration(milliseconds: 350),
+                totalRepeatCount: 1,
+                textStyle: TextStyle(
+                  color: Colors.red, 
+                  fontSize: 19.0, 
+                  fontWeight: FontWeight.bold
+                ),
+              ),
               _createEmail(),
               _createPassword(),
               SizedBox(height: 40.0),
