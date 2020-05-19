@@ -25,11 +25,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     controller.forward();
 
     controller.addListener((){
-      setState(() {
-        
-      });
-      print(controller.value);
-      
+      setState(() {});
     });
   }
 

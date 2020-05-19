@@ -18,7 +18,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
 
-    controller = AnimationController(duration: Duration(seconds: 1), vsync: this);
+    controller = AnimationController(duration: Duration(seconds: 2), vsync: this);
     animation  = CurvedAnimation(parent: controller, curve: Curves.decelerate);
     
     controller.forward();
@@ -31,6 +31,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       
     });
   }
+  @override
+  void dispose(){
+    controller.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +90,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         ),
         FlatButton(
           child: Text('Create Account'),
-          onPressed: () => Navigator.pushReplacementNamed(context, LoginPage.id),
+          onPressed: () => Navigator.pushReplacementNamed(context, RegisterPage.id),
         )
       ],
     ),
