@@ -1,9 +1,8 @@
-import 'package:chat/chat_page.dart';
-import 'package:chat/login_page.dart';
-import 'package:chat/register_page.dart';
+import 'package:chat/pages/chat_page.dart';
+import 'package:chat/pages/login_page.dart';
+import 'package:chat/pages/register_page.dart';
 import 'package:flutter/material.dart';
-
-import 'home_page.dart';
+import 'pages/home_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,17 +11,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Chat',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
       ),
+      initialRoute: LoginPage.id,
       routes: {
-        'home'    : (BuildContext context) => HomePage(),
-        'register': (BuildContext context) => RegisterPage(),
-        'login'   : (BuildContext context) => LoginPage(),
-        'chat'    : (BuildContext context) => ChatPage(),
+        HomePage.id     : (BuildContext context) => HomePage(),
+        RegisterPage.id : (BuildContext context) => RegisterPage(),
+        LoginPage.id    : (BuildContext context) => LoginPage(),
+        ChatPage.id     : (BuildContext context) => ChatPage(),
       },
-      initialRoute: 'home',
     );
   }
 }
