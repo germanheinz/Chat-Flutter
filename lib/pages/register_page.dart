@@ -1,16 +1,44 @@
+import 'package:chat/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
-class RegisterPage extends StatelessWidget {
-  const RegisterPage({Key key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+
   static const String id = 'register';
+
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
+//Agrego SingleTicker para obtener funcionalidad para animaciones
+class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderStateMixin {
+
+  // Defino el controller para Animation
+  AnimationController controller;
+  Animation animation;
+  //Sobreescribo initState e instancio AnimationController
+  @override
+  void initState() {
+    super.initState();
+
+    controller = AnimationController(duration: Duration(seconds: 1), vsync: this);
+    animation  = CurvedAnimation(parent: controller, curve: Curves.ease);
+    
+    controller.forward();
+
+    controller.addListener((){
+      setState(() {
+        
+      });
+      print(controller.value);
+      
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          _register(context)
-        ],
+      backgroundColor: Colors.white,
+      body: Center(
+        child:_register(context),
       ),
     );
   }
@@ -22,15 +50,17 @@ class RegisterPage extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
       children: <Widget>[
-        SafeArea(child: Container(
-          height: 100.0,
+        SafeArea(
+          child: Container(
+          height: animation.value,
         ),
         ),
         Container(
-          width: size.width * 0.85,
+          // width: size.width * 0.85,
+          width: animation.value * 300,
           height: size.height * 0.6,
-          margin: EdgeInsets.symmetric(vertical: 10.0),
-          padding: EdgeInsets.symmetric(vertical: 10.0),
+          margin: EdgeInsets.symmetric(vertical: animation.value),
+          padding: EdgeInsets.symmetric(vertical: animation.value),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(5.0),
@@ -48,19 +78,20 @@ class RegisterPage extends StatelessWidget {
               Text('Register', style: TextStyle(color: Colors.red, fontSize: 19.0),),
               _createEmail(),
               _createPassword(),
-              SizedBox(height: 50.0),
+              SizedBox(height: 40.0),
               _crearBoton(),
             ],
           ),
         ),
         FlatButton(
-          child: Text('Create Account'),
-          onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
+          child: Text('Login in'),
+          onPressed: () => Navigator.pushReplacementNamed(context, LoginPage.id),
         )
       ],
     ),
   );
   }
+
   Widget _createEmail(){
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -75,6 +106,7 @@ class RegisterPage extends StatelessWidget {
       ),
     );
   } 
+
   Widget _createPassword(){
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -90,11 +122,12 @@ class RegisterPage extends StatelessWidget {
       ),
     );
   }
+
   Widget _crearBoton() {
     return RaisedButton(
       onPressed: (){},
       child: Container(
-        padding: EdgeInsets.symmetric( horizontal: 80.0, vertical: 15.0),
+        padding: EdgeInsets.symmetric( horizontal: animation.value * 20, vertical: animation.value * 10),
         child: Text('Ingresar'),
       ),
       shape: RoundedRectangleBorder(

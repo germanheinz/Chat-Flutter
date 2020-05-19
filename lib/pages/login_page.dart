@@ -1,20 +1,48 @@
+import 'package:chat/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({Key key}) : super(key: key);
-  static const String id = 'login';
+class LoginPage extends StatefulWidget {
+   static const String id = 'login';
+
+  // Defino el controller para Animation
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
+  AnimationController controller;
+
+  Animation animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = AnimationController(duration: Duration(seconds: 1), vsync: this);
+    animation  = CurvedAnimation(parent: controller, curve: Curves.decelerate);
+    
+    controller.forward();
+
+    controller.addListener((){
+      setState(() {
+        
+      });
+      print(controller.value);
+      
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          _login(context)
-        ],
+      backgroundColor: Colors.white,
+      body: Center(
+        child:_register(context),
       ),
     );
   }
-  Widget _login(BuildContext context){
+
+  Widget _register(BuildContext context){
 
     final size = MediaQuery.of(context).size;
     
@@ -23,14 +51,15 @@ class LoginPage extends StatelessWidget {
       children: <Widget>[
         SafeArea(
           child: Container(
-          height: 100.0,
+          height: animation.value,
         ),
         ),
         Container(
-          width: size.width * 0.85,
+          // width: size.width * 0.85,
+          width: animation.value * 300,
           height: size.height * 0.6,
-          margin: EdgeInsets.symmetric(vertical: 10.0),
-          padding: EdgeInsets.symmetric(vertical: 10.0),
+          margin: EdgeInsets.symmetric(vertical: animation.value),
+          padding: EdgeInsets.symmetric(vertical: animation.value),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(5.0),
@@ -48,24 +77,24 @@ class LoginPage extends StatelessWidget {
               Text('Login', style: TextStyle(color: Colors.red, fontSize: 19.0),),
               _createEmail(),
               _createPassword(),
-              SizedBox(height: 50.0),
+              SizedBox(height: 40.0),
               _crearBoton(),
             ],
           ),
         ),
         FlatButton(
           child: Text('Create Account'),
-          onPressed: () => Navigator.pushReplacementNamed(context, 'register'),
+          onPressed: () => Navigator.pushReplacementNamed(context, LoginPage.id),
         )
       ],
     ),
   );
   }
+
   Widget _createEmail(){
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: TextField(
-        keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
         icon: Icon(Icons.alternate_email, color: Colors.red),
         hintText: 'test@test.com',
@@ -76,6 +105,7 @@ class LoginPage extends StatelessWidget {
       ),
     );
   } 
+
   Widget _createPassword(){
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -91,11 +121,12 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
+
   Widget _crearBoton() {
     return RaisedButton(
       onPressed: (){},
       child: Container(
-        padding: EdgeInsets.symmetric( horizontal: 80.0, vertical: 15.0),
+        padding: EdgeInsets.symmetric( horizontal: animation.value * 20, vertical: animation.value * 10),
         child: Text('Ingresar'),
       ),
       shape: RoundedRectangleBorder(
