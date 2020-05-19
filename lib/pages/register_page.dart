@@ -75,15 +75,20 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           child: Column(
             children: <Widget>[
               Padding(padding: EdgeInsets.all(16.0)),
-              TypewriterAnimatedTextKit(
+              ColorizeAnimatedTextKit(
+                colors: [Colors.red[400],
+                        Colors.red[300],
+                        Colors.orange[50],
+                        Colors.red[200]],
                 text:['Register'], 
-                speed: Duration(milliseconds: 350),
+                speed: Duration(milliseconds: 250),
                 totalRepeatCount: 1,
                 textStyle: TextStyle(
                   color: Colors.red, 
                   fontSize: 19.0, 
                   fontWeight: FontWeight.bold
                 ),
+                 alignment: AlignmentDirectional.topStart
               ),
               _createEmail(),
               _createPassword(),
