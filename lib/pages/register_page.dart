@@ -14,13 +14,15 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   // Defino el controller para Animation
   AnimationController controller;
   Animation animation;
+  Animation animatedColor;
   //Sobreescribo initState e instancio AnimationController
   @override
   void initState() {
     super.initState();
 
-    controller = AnimationController(duration: Duration(seconds: 1), vsync: this);
-    animation  = CurvedAnimation(parent: controller, curve: Curves.ease);
+    controller    = AnimationController(duration: Duration(seconds: 1), vsync: this);
+    animation     = CurvedAnimation(parent: controller, curve: Curves.ease);
+    animatedColor = ColorTween(begin: Colors.white, end: Colors.red).animate(controller);
     
     controller.forward();
 
@@ -71,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           ),
           child: Column(
             children: <Widget>[
-              Text('Register', style: TextStyle(color: Colors.red, fontSize: 19.0),),
+              Text('Register', style: TextStyle(color: Colors.red, fontSize: 19.0, fontWeight: FontWeight.bold),),
               _createEmail(),
               _createPassword(),
               SizedBox(height: 40.0),
@@ -130,7 +132,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         borderRadius: BorderRadius.circular(5.0)
       ),
       elevation: 0.0,
-      color: Colors.red,
+      color: animatedColor.value,
       textColor: Colors.white,
       // onPressed: snapshot.hasData ? ()=> _login(bloc, context) : null
     );

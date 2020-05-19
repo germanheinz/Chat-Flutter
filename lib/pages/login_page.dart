@@ -13,13 +13,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   AnimationController controller;
 
   Animation animation;
+  Animation animatedColor;
 
   @override
   void initState() {
     super.initState();
 
-    controller = AnimationController(duration: Duration(seconds: 2), vsync: this);
-    animation  = CurvedAnimation(parent: controller, curve: Curves.decelerate);
+    controller    = AnimationController(duration: Duration(seconds: 1), vsync: this);
+    animation     = CurvedAnimation(parent: controller, curve: Curves.decelerate);
+    animatedColor = ColorTween(begin: Colors.white, end: Colors.red).animate(controller);
     
     controller.forward();
 
@@ -80,7 +82,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           ),
           child: Column(
             children: <Widget>[
-              Text('Login', style: TextStyle(color: Colors.red, fontSize: 19.0),),
+              Text('Login', style: TextStyle(color: animatedColor.value, fontSize: 19.0, fontWeight: FontWeight.bold),),
               _createEmail(),
               _createPassword(),
               SizedBox(height: 40.0),
@@ -139,7 +141,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         borderRadius: BorderRadius.circular(5.0)
       ),
       elevation: 0.0,
-      color: Colors.red,
+      color: animatedColor.value,
       textColor: Colors.white,
       // onPressed: snapshot.hasData ? ()=> _login(bloc, context) : null
     );
