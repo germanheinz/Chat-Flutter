@@ -1,4 +1,6 @@
+import 'package:chat/pages/chat_page.dart';
 import 'package:chat/pages/register_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,6 +18,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   String email;
   String password;
+
+  final _auth = FirebaseAuth.instance;
+  FirebaseUser firebaseUser;
 
   @override
   void initState() {
@@ -139,8 +144,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   Widget _crearBoton() {
     return RaisedButton(
       onPressed: (){
-        print('Email: ' + email);
-        print('Password: ' + password);
+        _loginIn(context);
       },
       child: Container(
         padding: EdgeInsets.symmetric( horizontal: animation.value * 20, vertical: animation.value * 10),
@@ -154,5 +158,18 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       textColor: Colors.white,
       // onPressed: snapshot.hasData ? ()=> _login(bloc, context) : null
     );
+  }
+  
+  Future<AuthResult> _loginIn(context) async {
+      try {
+      AuthResult userLogged = await _auth.signInWithEmailAndPassword(email: email, password: password);
+        if(userLogged != null){
+          Navigator.popAndPushNamed(context, ChatPage.id);
+          return userLogged;
+        }  
+      } catch (e) {
+        print(e);
+      }
+      return null;
   }
 }
