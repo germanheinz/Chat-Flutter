@@ -34,11 +34,31 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // void getMessages() async {
+  //   final messages = await _fireStore.collection('messages').getDocuments();
+  //   for (var message in messages.documents) {
+  //     print(message.data);
+  //   }
+  // }
+  void messagesStream() async {
+    await for(var snapshot in _fireStore.collection('messages').snapshots()){
+      for(var message in snapshot.documents){
+        print(message.data);
+      }
+    };
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Chat'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.close), 
+            onPressed:(){ messagesStream();} 
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -52,6 +72,7 @@ class _ChatPageState extends State<ChatPage> {
       // floatingActionButton: Icon(Icons.send),
     );
   }
+  
   Widget _inputMessage(){
     return Container(
       margin: const EdgeInsets.only(left: 10.0, right: 0.0,bottom: 5.0),
