@@ -3,6 +3,7 @@ import 'package:chat/pages/chat_page.dart';
 import 'package:chat/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class RegisterPage extends StatefulWidget {
 
@@ -21,6 +22,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
   String email;
   String password;
+  bool showSpinner = false;
 
   //Sobreescribo initState e instancio AnimationController
   @override
@@ -42,8 +44,11 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child:_register(context),
+      body: ModalProgressHUD(
+          inAsyncCall: showSpinner,
+          child: Center(
+          child:_register(context),
+        ),
       ),
     );
   }
@@ -152,8 +157,14 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
   Widget _crearBoton() {
     return RaisedButton(
       onPressed: () async {
+        setState(() {
+          showSpinner = true;
+        });
         try {
           final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+          setState(() {
+            showSpinner = true;
+          });
           if(newUser != null){
             Navigator.pushNamed(context, ChatPage.id);
           }

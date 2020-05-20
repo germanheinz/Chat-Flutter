@@ -2,6 +2,7 @@ import 'package:chat/pages/chat_page.dart';
 import 'package:chat/pages/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class LoginPage extends StatefulWidget {
    static const String id = 'login';
@@ -18,6 +19,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   String email;
   String password;
+
+  bool showSpinner = false;
 
   final _auth = FirebaseAuth.instance;
   FirebaseUser firebaseUser;
@@ -47,8 +50,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
+      body: ModalProgressHUD(
+        inAsyncCall: showSpinner,
+        child: Center(
         child:_login(context),
+        ),
       ),
     );
   }
@@ -144,6 +150,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   Widget _crearBoton() {
     return RaisedButton(
       onPressed: (){
+        setState(() {
+            showSpinner = true;
+          });
         _loginIn(context);
       },
       child: Container(
@@ -164,6 +173,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       try {
       AuthResult userLogged = await _auth.signInWithEmailAndPassword(email: email, password: password);
         if(userLogged != null){
+          setState(() {
+              showSpinner = false;
+          });
           Navigator.popAndPushNamed(context, ChatPage.id);
           return userLogged;
         }  
@@ -172,4 +184,5 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       }
       return null;
   }
+
 }
