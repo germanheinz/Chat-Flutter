@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      initialRoute: LoginPage.id,
+      initialRoute: ChatPage.id,
       routes: {
         HomePage.id     : (BuildContext context) => HomePage(),
         RegisterPage.id : (BuildContext context) => RegisterPage(),
