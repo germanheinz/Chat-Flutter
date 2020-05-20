@@ -11,9 +11,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
   AnimationController controller;
-
   Animation animation;
   Animation animatedColor;
+
+  String email;
+  String password;
 
   @override
   void initState() {
@@ -26,31 +28,27 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     controller.forward();
 
     controller.addListener((){
-      setState(() {
-        
-      });
-      print(controller.value);
-      
+      setState(() {});
     });
   }
+  
   @override
   void dispose(){
     controller.dispose();
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child:_register(context),
+        child:_login(context),
       ),
     );
   }
 
-  Widget _register(BuildContext context){
+  Widget _login(BuildContext context){
 
     final size = MediaQuery.of(context).size;
     
@@ -104,6 +102,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: TextField(
+        keyboardType: TextInputType.emailAddress,
+        onChanged: (value){
+          email = value;
+        },
         decoration: InputDecoration(
         icon: Icon(Icons.alternate_email, color: Colors.red),
         hintText: 'test@test.com',
@@ -119,6 +121,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: TextField(
+        onChanged: (value){
+          password = value;
+        },
         obscureText: true,
         decoration: InputDecoration(
           icon: Icon(Icons.lock_outline, color: Colors.red),
@@ -133,7 +138,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   Widget _crearBoton() {
     return RaisedButton(
-      onPressed: (){},
+      onPressed: (){
+        print('Email: ' + email);
+        print('Password: ' + password);
+      },
       child: Container(
         padding: EdgeInsets.symmetric( horizontal: animation.value * 20, vertical: animation.value * 10),
         child: Text('Ingresar'),

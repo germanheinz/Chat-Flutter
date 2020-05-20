@@ -1,6 +1,8 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:chat/pages/chat_page.dart';
 import 'package:chat/pages/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterPage extends StatefulWidget {
 
@@ -11,11 +13,15 @@ class RegisterPage extends StatefulWidget {
 }
 //Agrego SingleTicker para obtener funcionalidad para animaciones
 class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderStateMixin {
-
+  final _auth = FirebaseAuth.instance;
   // Defino el controller para Animation
   AnimationController controller;
   Animation animation;
   Animation animatedColor;
+
+  String email;
+  String password;
+
   //Sobreescribo initState e instancio AnimationController
   @override
   void initState() {
@@ -110,6 +116,9 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: TextField(
+        onChanged: (value){
+          email = value;
+        },
         decoration: InputDecoration(
         icon: Icon(Icons.alternate_email, color: Colors.red),
         hintText: 'test@test.com',
@@ -125,6 +134,9 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: TextField(
+        onChanged: (value){
+          password = value;
+        },
         obscureText: true,
         decoration: InputDecoration(
           icon: Icon(Icons.lock_outline, color: Colors.red),
@@ -139,7 +151,16 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
   Widget _crearBoton() {
     return RaisedButton(
-      onPressed: (){},
+      onPressed: () async {
+        try {
+          final newUser = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+          if(newUser != null){
+            Navigator.pushNamed(context, ChatPage.id);
+          }
+        } catch (e) {
+          print(e);
+        }
+      },
       child: Container(
         padding: EdgeInsets.symmetric( horizontal: animation.value * 20, vertical: animation.value * 10),
         child: Text('Ingresar'),
