@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+FirebaseUser firebaseUser;
+final dateTime = DateTime.now();
 
 class ChatPage extends StatefulWidget {
   static const String id = 'chat';
@@ -15,7 +17,7 @@ class _ChatPageState extends State<ChatPage> {
   final _fireStore = Firestore.instance;
   final _auth = FirebaseAuth.instance;
   final textEditingController = TextEditingController();
-  FirebaseUser firebaseUser;
+  
   String message;
 
   @override
@@ -55,28 +57,33 @@ class _ChatPageState extends State<ChatPage> {
 
   StreamBuilder<QuerySnapshot> _getMessages() {
     return StreamBuilder<QuerySnapshot>(
-            stream: _fireStore.collection('messages').snapshots(), 
+            stream: _fireStore.collection('messages').orderBy('time', descending: true).snapshots(), 
+
             builder: (context, snapshot){
               if(!snapshot.hasData){
                 return Center(
                   child: CircularProgressIndicator(),
                 );
               }
-                final messages = snapshot.data.documents;
-                List<MessageBubble> messageBubble = [];
-                for(var message in messages){
-                  final messageText   = message.data['text'];
-                  final messageSender = message.data['sender'];
-                  final messageWidget = MessageBubble(text: messageText ,sender: messageSender);
-                  messageBubble.add(messageWidget);
-                }
-                return Expanded(
-                    child: ListView(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
-                    children: messageBubble,
-                  ),
-                );
-              
+              final messages = snapshot.data.documents.reversed;
+              List<MessageBubble> messageBubble = [];
+              for(var message in messages){
+                final messageText   = message.data['text'];
+                final messageSender = message.data['sender'];
+                final dateTime      = message.data['dateTime'];
+
+                final currentUser = firebaseUser.email;
+                
+                final messageWidget = MessageBubble(text: messageText ,sender: messageSender,date: dateTime, isMe: currentUser == messageSender,);
+                messageBubble.add(messageWidget);
+              }
+              return Expanded(
+                  child: ListView(
+                  reverse: false,  
+                  padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
+                  children: messageBubble,
+                ),
+              ); 
             },
           );
   }
@@ -91,9 +98,16 @@ class _ChatPageState extends State<ChatPage> {
               controller: textEditingController,
               decoration: InputDecoration(
               hintText: 'Write a Message',
-              border: OutlineInputBorder(),
+              border: InputBorder.none,
+              // focusedBorder: OutlineInputBorder(
+              //     borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              //     borderSide: BorderSide(color: Colors.red)
+              // ),
+              filled: true,
+              contentPadding:
+              EdgeInsets.only(bottom: 0.0, left: 15.0, right: 10.0),
               ),
-            onChanged:(value){
+              onChanged:(value){
               message = value;
             } 
             ),
@@ -101,7 +115,7 @@ class _ChatPageState extends State<ChatPage> {
           FlatButton(
               onPressed: (){
                 textEditingController.clear();
-                _fireStore.collection('messages').add({'text': message ,'sender': firebaseUser.email});
+                _fireStore.collection('messages').add({'text': message ,'sender': firebaseUser.email, 'time': FieldValue.serverTimestamp(),});
               },
               child: Text('Send'),
           ),
@@ -122,35 +136,32 @@ class _ChatPageState extends State<ChatPage> {
       }
     }
 
-  void messagesStream() async {
-    await for(var snapshot in _fireStore.collection('messages').snapshots()){
-      for(var message in snapshot.documents){
-        print(message.data);
-      }
-    }
-  }
-
 }
 
 class MessageBubble extends StatelessWidget {
 
-  MessageBubble({this.text, this.sender});
+  MessageBubble({this.text, this.sender,this.date, this.isMe});
 
   final String sender;
   final String text;
+  final DateTime date;
+  final bool isMe;
+
 
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
           children: <Widget>[
           Text(sender, style: TextStyle(fontSize: 12.0, color: Colors.black54)),
           Material(
-          borderRadius: BorderRadius.circular(30.0),
+          borderRadius: isMe ? BorderRadius.only(topRight: Radius.circular(30.0), bottomLeft: Radius.circular(30.0), bottomRight: Radius.circular(30.0))
+                             : BorderRadius.only(topRight: Radius.circular(30.0), bottomLeft: Radius.circular(30.0), bottomRight: Radius.circular(30.0)),
           elevation: 5.0,
-          color: Colors.redAccent,
+          // color: Colors.redAccent,
+          color: isMe ? Colors.redAccent : Colors.deepOrange,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
             child: Text('$text',style: TextStyle(fontSize: 15.0, color: Colors.white, fontWeight: FontWeight.bold),))),
@@ -158,4 +169,5 @@ class MessageBubble extends StatelessWidget {
         ),
     );
   }
+
 }
