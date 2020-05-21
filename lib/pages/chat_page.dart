@@ -1,3 +1,4 @@
+import 'package:chat/pages/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,6 +14,7 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final _fireStore = Firestore.instance;
   final _auth = FirebaseAuth.instance;
+  final textEditingController = TextEditingController();
   FirebaseUser firebaseUser;
   String message;
 
@@ -20,32 +22,6 @@ class _ChatPageState extends State<ChatPage> {
   void initState() { 
     super.initState();
     getCurrentUser();
-  }
-
-  void getCurrentUser() async{
-    try {
-    final user = await _auth.currentUser();
-      if(user != null){
-        firebaseUser = user;
-        print(firebaseUser.email);
-      }  
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  // void getMessages() async {
-  //   final messages = await _fireStore.collection('messages').getDocuments();
-  //   for (var message in messages.documents) {
-  //     print(message.data);
-  //   }
-  // }
-  void messagesStream() async {
-    await for(var snapshot in _fireStore.collection('messages').snapshots()){
-      for(var message in snapshot.documents){
-        print(message.data);
-      }
-    };
   }
   
   @override
@@ -56,21 +32,53 @@ class _ChatPageState extends State<ChatPage> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close), 
-            onPressed:(){ messagesStream();} 
+            onPressed:(){ 
+              _auth.signOut();
+              Navigator.popAndPushNamed(context, LoginPage.id);
+            } 
           ),
         ],
       ),
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            _getMessages(),
             _inputMessage(),
           ],
         ),
       ),
       // floatingActionButton: Icon(Icons.send),
     );
+  }
+
+  StreamBuilder<QuerySnapshot> _getMessages() {
+    return StreamBuilder<QuerySnapshot>(
+            stream: _fireStore.collection('messages').snapshots(), 
+            builder: (context, snapshot){
+              if(!snapshot.hasData){
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+                final messages = snapshot.data.documents;
+                List<MessageBubble> messageBubble = [];
+                for(var message in messages){
+                  final messageText   = message.data['text'];
+                  final messageSender = message.data['sender'];
+                  final messageWidget = MessageBubble(text: messageText ,sender: messageSender);
+                  messageBubble.add(messageWidget);
+                }
+                return Expanded(
+                    child: ListView(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
+                    children: messageBubble,
+                  ),
+                );
+              
+            },
+          );
   }
   
   Widget _inputMessage(){
@@ -80,6 +88,7 @@ class _ChatPageState extends State<ChatPage> {
         children: <Widget>[
           Expanded(
             child: TextField(
+              controller: textEditingController,
               decoration: InputDecoration(
               hintText: 'Write a Message',
               border: OutlineInputBorder(),
@@ -91,12 +100,62 @@ class _ChatPageState extends State<ChatPage> {
           ),
           FlatButton(
               onPressed: (){
-                _fireStore.collection('messages').add({'message': message ,'sender': firebaseUser.email});
+                textEditingController.clear();
+                _fireStore.collection('messages').add({'text': message ,'sender': firebaseUser.email});
               },
               child: Text('Send'),
           ),
         ],
       ),
+    );
+  }
+
+  void getCurrentUser() async{
+      try {
+      final user = await _auth.currentUser();
+        if(user != null){
+          firebaseUser = user;
+          print(firebaseUser.email);
+        }  
+      } catch (e) {
+        print(e);
+      }
+    }
+
+  void messagesStream() async {
+    await for(var snapshot in _fireStore.collection('messages').snapshots()){
+      for(var message in snapshot.documents){
+        print(message.data);
+      }
+    }
+  }
+
+}
+
+class MessageBubble extends StatelessWidget {
+
+  MessageBubble({this.text, this.sender});
+
+  final String sender;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+          Text(sender, style: TextStyle(fontSize: 12.0, color: Colors.black54)),
+          Material(
+          borderRadius: BorderRadius.circular(30.0),
+          elevation: 5.0,
+          color: Colors.redAccent,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+            child: Text('$text',style: TextStyle(fontSize: 15.0, color: Colors.white, fontWeight: FontWeight.bold),))),
+          ],
+        ),
     );
   }
 }
